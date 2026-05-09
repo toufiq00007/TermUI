@@ -34,7 +34,8 @@
     "@termuijs/widgets": "workspace:*",
     "@termuijs/jsx": "workspace:*",
     "@termuijs/tss": "workspace:*",
-    "@termuijs/data": "workspace:*"
+    "@termuijs/data": "workspace:*",
+    "@termuijs/ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

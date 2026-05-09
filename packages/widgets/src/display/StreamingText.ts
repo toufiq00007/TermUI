@@ -39,7 +39,7 @@ export class StreamingText extends Widget {
     constructor(options: StreamingTextOptions, style: Partial<Style> = {}) {
         super(style);
         this._text = options.text;
-        this._cursor = options.cursor ?? '▋';
+        this._cursor = options.cursor ?? (caps.unicode ? '▋' : '_');
         this._speed = options.speed ?? 0;
         this._blinkInterval = options.blinkInterval ?? 530;
         this._revealed = 0;

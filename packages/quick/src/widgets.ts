@@ -19,11 +19,25 @@ import {
     BarChart as BarChartWidget,
     ProgressBar as ProgressBarWidget,
     Spinner as SpinnerWidget,
+    JSONView as JSONViewWidget,
+    DiffView as DiffViewWidget,
+    StreamingText as StreamingTextWidget,
+    ChatMessage as ChatMessageWidget,
+    ToolCall as ToolCallWidget,
+    CommandPalette as CommandPaletteWidget,
+    MultiProgress as MultiProgressWidget,
 } from '@termuijs/widgets';
 import type { TreeNode, TreeOptions } from '@termuijs/widgets';
 import type { BarGroup, BarChartOptions } from '@termuijs/widgets';
 import type { SkeletonOptions } from '@termuijs/widgets';
 import type { GridOptions } from '@termuijs/widgets';
+import type { JSONViewOptions } from '@termuijs/widgets';
+import type { DiffLine, DiffViewOptions } from '@termuijs/widgets';
+import type { StreamingTextOptions } from '@termuijs/widgets';
+import type { ChatMessageOptions } from '@termuijs/widgets';
+import type { ToolCallOptions, ToolCallStatus } from '@termuijs/widgets';
+import type { Command, CommandPaletteOptions } from '@termuijs/widgets';
+import type { ProgressItem, MultiProgressOptions } from '@termuijs/widgets';
 import type { Reactive } from './reactive.js';
 import { resolve } from './reactive.js';
 
@@ -344,6 +358,110 @@ export function spinner(opts: QuickSpinnerOptions = {}): Widget {
     );
 }
 
+// ── grid (canonical name for gridWidget) ──────────────────────────────────────
+
+/**
+ * Create a CSS-Grid-like layout widget. Alias for gridWidget with the
+ * canonical Sprint 3 name.
+ */
+export function grid(columns: number, items: Widget[], opts: QuickGridOptions = {}): Widget {
+    return gridWidget(columns, items, opts);
+}
+
+// ── JSONView ──────────────────────────────────────────────────────────────────
+
+export interface QuickJSONViewOptions extends Pick<JSONViewOptions, 'onSelect' | 'indent'> {}
+
+/**
+ * Create a collapsible JSON tree viewer.
+ */
+export function jsonView(data: unknown, opts: QuickJSONViewOptions = {}): Widget {
+    return new JSONViewWidget({ data, ...opts }, { flexGrow: 1 });
+}
+
+// ── DiffView ──────────────────────────────────────────────────────────────────
+
+export interface QuickDiffViewOptions extends Omit<DiffViewOptions, 'lines'> {}
+
+/**
+ * Create a unified diff viewer. Accepts either a raw unified-diff string or
+ * a pre-parsed DiffLine[] array.
+ */
+export function diffView(diff: string | DiffLine[], opts: QuickDiffViewOptions = {}): Widget {
+    const lines: DiffLine[] = typeof diff === 'string'
+        ? diff.split('\n').map(line => {
+              if (line.startsWith('+')) return { type: 'add' as const, content: line.slice(1) };
+              if (line.startsWith('-')) return { type: 'remove' as const, content: line.slice(1) };
+              return { type: 'context' as const, content: line };
+          })
+        : diff;
+    return new DiffViewWidget({ lines, ...opts }, { flexGrow: 1 });
+}
+
+// ── StreamingText ─────────────────────────────────────────────────────────────
+
+/**
+ * Create a streaming text widget (typewriter effect).
+ */
+export function streamingText(opts: StreamingTextOptions, style: Partial<Style> = {}): Widget {
+    return new StreamingTextWidget(opts, { flexGrow: 1, ...style });
+}
+
+// ── ChatMessage ───────────────────────────────────────────────────────────────
+
+/**
+ * Create a chat message bubble (user / assistant / system).
+ */
+export function chatMessage(opts: ChatMessageOptions, style: Partial<Style> = {}): Widget {
+    return new ChatMessageWidget(opts, { flexGrow: 1, ...style });
+}
+
+// ── ToolCall ──────────────────────────────────────────────────────────────────
+
+export interface QuickToolCallOptions extends Omit<ToolCallOptions, 'args'> {
+    args?: Record<string, unknown>;
+}
+
+/**
+ * Create a tool-call display widget (name + status + collapsed args/result).
+ */
+export function toolCall(opts: QuickToolCallOptions, style: Partial<Style> = {}): Widget {
+    return new ToolCallWidget({ args: {}, ...opts }, { flexGrow: 1, ...style });
+}
+
+// ── CommandPalette ────────────────────────────────────────────────────────────
+
+export interface QuickCommand extends Omit<Command, 'id'> { id?: string; }
+
+/**
+ * Create a command-palette widget. Auto-generates `id` from label if omitted.
+ */
+export function commandPalette(
+    commands: QuickCommand[],
+    opts: Omit<CommandPaletteOptions, 'commands'> = {},
+): Widget {
+    const fullCommands: Command[] = commands.map((c, i) => ({
+        id: c.id ?? `cmd-${i}`,
+        label: c.label,
+        description: c.description,
+        action: c.action,
+    }));
+    return new CommandPaletteWidget({ commands: fullCommands, ...opts }, { flexGrow: 1 });
+}
+
+// ── MultiProgress ─────────────────────────────────────────────────────────────
+
+/**
+ * Create a multi-bar progress widget.
+ */
+export function multiProgress(
+    items: ProgressItem[],
+    opts: Omit<MultiProgressOptions, 'items'> = {},
+): Widget {
+    return new MultiProgressWidget({ items, ...opts }, { flexGrow: 1 });
+}
+
 // ── Re-export types from @termuijs/widgets for convenience ──
 export type { TreeNode } from '@termuijs/widgets';
 export type { BarGroup, BarChartOptions } from '@termuijs/widgets';
+export type { DiffLine, ToolCallStatus } from '@termuijs/widgets';

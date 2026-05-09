@@ -26,6 +26,14 @@ export {
     barChart,
     progressBar,
     spinner,
+    // Sprint 3 additions
+    jsonView,
+    diffView,
+    streamingText,
+    chatMessage,
+    toolCall,
+    commandPalette,
+    multiProgress,
 } from './widgets.js';
 
 export type {
@@ -47,6 +55,13 @@ export type {
     TreeNode,
     BarGroup,
     BarChartOptions,
+    // Sprint 3 additions
+    QuickJSONViewOptions,
+    QuickDiffViewOptions,
+    QuickToolCallOptions,
+    QuickCommand,
+    DiffLine,
+    ToolCallStatus,
 } from './widgets.js';
 
 // ── Reactive ──────────────────────────────────────────
@@ -60,6 +75,10 @@ export {
     useMotion,
 } from '@termuijs/jsx';
 export type { AsyncState, KeyBinding, MotionPreferences } from '@termuijs/jsx';
+
+// ── Notification Hook (from @termuijs/ui) ─────────────
+export { useNotifications } from '@termuijs/ui';
+export type { Notification } from '@termuijs/ui';
 
 // ── Theme Hook (from @termuijs/tss) ───────────────────
 export { useTheme } from '@termuijs/tss';

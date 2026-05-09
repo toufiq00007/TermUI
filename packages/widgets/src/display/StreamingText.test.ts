@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { timerPoolUnsubscribeAll } from '@termuijs/motion';
-import { Screen } from '@termuijs/core';
+import { Screen, caps } from '@termuijs/core';
 import { StreamingText } from './StreamingText.js';
 
 afterEach(() => {
@@ -205,7 +205,26 @@ describe('StreamingText – lifecycle', () => {
     });
 });
 
-// ── 9. Text wrapping ──────────────────────────────────────────────────────────
+// ── 9. caps.unicode cursor fallback ──────────────────────────────────────────
+describe('StreamingText – caps.unicode cursor fallback', () => {
+    it('uses ASCII cursor _ when caps.unicode is false and no explicit cursor given', () => {
+        const orig = caps.unicode;
+        (caps as any).unicode = false;
+        try {
+            const widget = new StreamingText({ text: 'Hi', speed: 0 });
+            (widget as any)._cursorVisible = true;
+            const screen = new Screen(40, 10);
+            widget.updateRect({ x: 0, y: 0, width: 40, height: 10 });
+            widget.render(screen);
+            const line = rowText(screen, 0);
+            expect(line).toBe('Hi_');
+        } finally {
+            (caps as any).unicode = orig;
+        }
+    });
+});
+
+// ── 11. Text wrapping ─────────────────────────────────────────────────────────
 describe('StreamingText – text wrapping', () => {
     it('wraps long text across multiple lines', () => {
         const widget = new StreamingText({
