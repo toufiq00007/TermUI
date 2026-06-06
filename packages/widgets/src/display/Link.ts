@@ -2,11 +2,11 @@ import { Widget } from '../base/Widget.js';
 import { type Style, type Color, type Screen, caps, styleToCellAttrs, parseColor, stringWidth } from '@termuijs/core';
 
 export interface LinkOptions {
-    /** URL the OSC 8 escape points to */
+    /** The target URL for the OSC 8 hyperlink anchor. */
     url: string;
-    /** Underline color object. Default: parseColor('blue') */
+    /** Underline and anchor fallback color object. Default: blue */
     color?: Color;
-    /** Show the URL as a fallback when caps.unicode is off. Default: true */
+    /** Whether to append the URL visually when terminal capabilities lack unicode/OSC 8 support. Default: true */
     showUrlFallback?: boolean;
 }
 
@@ -16,13 +16,14 @@ export class Link extends Widget {
     private _color: Color;
     private _showUrlFallback: boolean;
 
-    constructor(text: string, style?: Partial<Style>, opts?: LinkOptions) {
+    // Fixed constructor mapping: opts is now required to prevent missing URL type errors
+    constructor(text: string, style: Partial<Style> | undefined, opts: LinkOptions) {
         super(style);
         
         this._text = text;
-        this._url = opts?.url ?? '';
-        this._color = opts?.color ?? parseColor('blue');
-        this._showUrlFallback = opts?.showUrlFallback ?? true;
+        this._url = opts.url;
+        this._color = opts.color ?? parseColor('blue');
+        this._showUrlFallback = opts.showUrlFallback ?? true;
     }
 
     public setText(text: string): void {
@@ -40,13 +41,11 @@ export class Link extends Widget {
     }
 
     /**
-     * Helper to safely slice a string by its visual terminal cell width
+     * Helper to safely slice text based on its visible terminal cell width grid blocks
      */
     private _sliceByWidth(str: string, maxWidth: number): string {
         let currentWidth = 0;
         let result = '';
-        
-        // Loop through code points safely (handles emojis and surrogates)
         for (const char of str) {
             const charWidth = stringWidth(char);
             if (currentWidth + charWidth > maxWidth) {
@@ -58,13 +57,37 @@ export class Link extends Widget {
         return result;
     }
 
-    /**
-     * Renders the Link widget into the typed Screen buffer context.
-     */
     protected _renderSelf(screen: Screen): void {
         const rect = this._getContentRect();
         if (rect.width <= 0 || rect.height <= 0) {
             return;
+        }
+
+        let targetText = this._text;
+        let cellLinkTarget: string | undefined = undefined;
+
+        // 1. If terminal environment supports modern capabilities, set the metadata link directly
+        if (caps.unicode) {
+            cellLinkTarget = this._url;
+            if (stringWidth(targetText) > rect.width) {
+                targetText = this._sliceByWidth(targetText, rect.width);
+            }
+        } 
+        // 2. Fallback execution layout block for legacy or raw non-unicode terminal windows
+        else if (this._showUrlFallback && this._url) {
+            const fallbackSuffix = ` (${this._url})`;
+            if (stringWidth(targetText + fallbackSuffix) > rect.width) {
+                const availableWidthForText = rect.width - stringWidth(fallbackSuffix);
+                targetText = availableWidthForText > 0 
+                    ? this._sliceByWidth(targetText, availableWidthForText) + fallbackSuffix
+                    : this._sliceByWidth(fallbackSuffix, rect.width);
+            } else {
+                targetText = targetText + fallbackSuffix;
+            }
+        } else {
+            if (stringWidth(targetText) > rect.width) {
+                targetText = this._sliceByWidth(targetText, rect.width);
+            }
         }
 
         const cellAttrs = styleToCellAttrs({
@@ -73,31 +96,10 @@ export class Link extends Widget {
             ...this.style,
         });
 
-        let targetText = this._text;
-
-        // Truncate only the printable text portion visually before wrapping
-        if (stringWidth(targetText) > rect.width) {
-            targetText = this._sliceByWidth(targetText, rect.width);
-        }
-
-        let outputPayload = targetText;
-
-        if (caps.unicode) {
-            // Raw OSC 8 hyperlinks structure wrap
-            outputPayload = `\x1b]8;;${this._url}\x1b\\${targetText}\x1b]8;;\x1b\\`;
-        } else if (this._showUrlFallback && this._url) {
-            const fallbackSuffix = ` (${this._url})`;
-            
-            if (stringWidth(targetText + fallbackSuffix) > rect.width) {
-                const availableWidthForText = rect.width - stringWidth(fallbackSuffix);
-                outputPayload = availableWidthForText > 0 
-                    ? this._sliceByWidth(targetText, availableWidthForText) + fallbackSuffix
-                    : this._sliceByWidth(fallbackSuffix, rect.width);
-            } else {
-                outputPayload = targetText + fallbackSuffix;
-            }
-        }
-
-        screen.writeString(rect.x, rect.y, outputPayload, cellAttrs);
+        // screen.writeString will map this property directly to cell.link without breaking string widths!
+        screen.writeString(rect.x, rect.y, targetText, {
+            ...cellAttrs,
+            link: cellLinkTarget
+        });
     }
 }

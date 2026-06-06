@@ -3,7 +3,7 @@ import { Screen, caps, parseColor } from '@termuijs/core';
 import { Link } from './Link.js';
 
 describe('Link Widget', () => {
-    let screen: any;
+    let screen: Screen;
 
     beforeEach(() => {
         screen = new Screen(60, 5);
@@ -13,7 +13,7 @@ describe('Link Widget', () => {
         vi.restoreAllMocks();
     });
 
-    it('renders the display text within the widget area with standard styles', () => {
+    it('renders the display text and sets native cell link attributes correctly', () => {
         vi.spyOn(caps, 'unicode', 'get').mockReturnValue(true);
 
         const link = new Link(
@@ -25,14 +25,17 @@ describe('Link Widget', () => {
         link.updateRect({ x: 0, y: 0, width: 60, height: 1 });
         link.render(screen);
 
-        // Map characters out of the cell matrix
-        const row0 = screen.back[0].map((c: any) => c.char).join('');
-        
-        // The cell array drops or flattens control codes but preserves the layout characters
-        expect(row0).toContain(']8;;https://example.com\\Click Here]8;;\\');
+        // Verify plain characters map cleanly to screen columns without truncation corruption
+        const plainChars = screen.back[0].slice(0, 10).map(c => c.char).join('');
+        expect(plainChars).toBe('Click Here');
+
+        // Verify each visual character cell holds the metadata link parameter
+        for (let i = 0; i < 10; i++) {
+            expect(screen.back[0][i].link).toBe('https://example.com');
+        }
     });
 
-    it('setText and setUrl triggers markDirty and updates render visibility', () => {
+    it('setText and setUrl triggers markDirty and updates link properties', () => {
         vi.spyOn(caps, 'unicode', 'get').mockReturnValue(true);
 
         const link = new Link('Old Text', {}, { url: 'https://old.com' });
@@ -47,8 +50,9 @@ describe('Link Widget', () => {
         link.updateRect({ x: 0, y: 0, width: 60, height: 1 });
         link.render(screen);
 
-        const row0 = screen.back[0].map((c: any) => c.char).join('');
-        expect(row0).toContain(']8;;https://new.com\\New Text]8;;\\');
+        const plainChars = screen.back[0].slice(0, 8).map(c => c.char).join('');
+        expect(plainChars).toBe('New Text');
+        expect(screen.back[0][0].link).toBe('https://new.com');
     });
 
     it('appends URL in parentheses when caps.unicode is false and showUrlFallback is true', () => {
@@ -58,8 +62,10 @@ describe('Link Widget', () => {
         link.updateRect({ x: 0, y: 0, width: 60, height: 1 });
         link.render(screen);
 
-        const row0 = screen.back[0].map((c: any) => c.char).join('');
+        const row0 = screen.back[0].map(c => c.char).join('');
         expect(row0).toContain('Docs (https://docs.com)');
+        // Link cell property must be undefined under standard fallback layout
+        expect(screen.back[0][0].link).toBeUndefined();
     });
 
     it('does not append URL fallback if showUrlFallback option is configured to false', () => {
@@ -69,7 +75,7 @@ describe('Link Widget', () => {
         link.updateRect({ x: 0, y: 0, width: 60, height: 1 });
         link.render(screen);
 
-        const row0 = screen.back[0].map((c: any) => c.char).join('');
+        const row0 = screen.back[0].map(c => c.char).join('');
         expect(row0).toContain('Docs');
         expect(row0).not.toContain('(https://docs.com)');
     });
