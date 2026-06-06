@@ -44,6 +44,8 @@ export type { ButtonOptions, ButtonVariant } from './input/Button.js';
 
 export { RangeInput } from './input/RangeInput.js';
 export type { RangeInputOptions } from './input/RangeInput.js';
+export { Slider } from "./input/Slider.js";
+export type { SliderOptions } from "./input/Slider.js";
 
 // ── Data Widgets ──────────────────────────────────────
 export { Table } from './data/Table.js';
@@ -80,6 +82,8 @@ export { Columns } from './layout/Columns.js';
 export type { ColumnsOptions } from './layout/Columns.js';
 export { Dock } from './layout/Dock.js';
 export type { DockOptions, DockItem, DockEdge } from './layout/Dock.js';
+export { Divider } from './layout/Divider.js';
+export type { DividerOptions, DividerOrientation } from './layout/Divider.js';
 
 // ── Feedback Widgets ──────────────────────────────────
 export { ProgressBar } from './feedback/ProgressBar.js';
@@ -122,6 +126,9 @@ export { Hexdump } from './data/Hexdump.js';
 export type { HexdumpOptions } from './data/Hexdump.js';
 
 // ── New Display Widgets ───────────────────────────────
+export { Breadcrumbs } from './display/Breadcrumbs.js';
+export type { BreadcrumbsOptions } from './display/Breadcrumbs.js';
+
 export { BigText } from './display/BigText.js';
 export type { BigTextOptions } from './display/BigText.js';
 export { Gradient } from './display/Gradient.js';
@@ -178,6 +185,8 @@ export type { MarqueeDirection, MarqueeOptions } from './display/Marquee.js';
 export { DataGrid } from './data/DataGrid.js';
 export { DataGrid as DataGridView } from './data/DataGrid.js';
 export type { DataGridColumn, DataGridRow, DataGridOptions, SortDirection } from './data/DataGrid.js';
+export { PieChart } from './data/PieChart.js';
+export type { PieSlice, PieChartOptions } from './data/PieChart.js';
 
 export {
     BarColumn,
