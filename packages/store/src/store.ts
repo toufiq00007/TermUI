@@ -38,8 +38,6 @@ let _batchDepth = 0;
 // Map store instance to batch entry. Using any for listener set type because
 // the batch mechanism operates on the raw Set<Listener<T>> without knowing T at this level.
 const _batchStores = new Map<Set<any>, BatchEntry<any>>();
-
-const _batchStores = new Map<Set<any>, BatchEntry<any>>();
 /**
  * Batch multiple state updates into a single render pass.
  *
@@ -100,7 +98,7 @@ export function batch<T>(fn: () => T): T {
 function flushBatch(threw: boolean) {
     if (threw) {
         for (const [, { prevState, rollback }] of _batchStores) {
-            rollback(prevState);
+            rollback();
         }
         _batchStores.clear(); // Don't notify listeners with partial state
     } else {
@@ -310,7 +308,7 @@ export function createStore<T extends object>(
                             prevState,
                             nextState,
                             commit: () => { state = nextState; persistState(); },
-                            rollback: (s) => { state = s; },
+                            rollback: () => { state = prevState; },
                         });
                     } else {
                         // Update to the new nextState, but keep the original prevState
