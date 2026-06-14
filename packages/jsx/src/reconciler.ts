@@ -448,26 +448,26 @@ function renderComponent(
     let vnode: VNode | Widget;
     try {
         vnode = component({ ...props, children: children.length === 1 ? children[0] : children });
-        } catch (err) {
-            clearCurrentFiber();
-            _parentFiber = prevParent;
+    } catch (err) {
+        clearCurrentFiber();
+        _parentFiber = prevParent;
 
-            if (err instanceof Promise) {
-                throw err;
-            }
-
-            const error = err instanceof Error ? err : new Error(String(err));
-            const boundary = findErrorBoundary(fiber);
-            if (boundary?.errorFallback) {
-                destroyFiber(fiber);
-                _parentFiber = boundary;
-                const fallbackVNode = boundary.errorFallback(error);
-                return reconcile(fallbackVNode);
-            }
-            // No boundary found — destroy fiber and show default error widget
-            destroyFiber(fiber);
-            return reconcile(defaultErrorVNode(error));
+        if (err instanceof Promise) {
+            throw err;
         }
+
+        const error = err instanceof Error ? err : new Error(String(err));
+        const boundary = findErrorBoundary(fiber);
+        if (boundary?.errorFallback) {
+            destroyFiber(fiber);
+            _parentFiber = boundary;
+            const fallbackVNode = boundary.errorFallback(error);
+            return reconcile(fallbackVNode);
+        }
+        // No boundary found — destroy fiber and show default error widget
+        destroyFiber(fiber);
+        return reconcile(defaultErrorVNode(error));
+    }
 
     clearCurrentFiber();
 

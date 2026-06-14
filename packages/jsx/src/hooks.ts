@@ -276,7 +276,7 @@ export function useLayoutEffect(effect: () => void | (() => void), deps?: any[])
         const record: EffectRecord = { effect, deps, ran: false };
         fiber.hooks.push({ value: record, deps });
         fiber.layoutEffects.push(record);
-        } else {
+    } else {
         const prev = fiber.hooks[idx];
         const shouldRun = !deps || !prev.deps || deps.some((d, i) => !Object.is(d, prev.deps![i]));
 
