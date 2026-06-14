@@ -224,5 +224,8 @@ export type { PopoverOptions, PopoverPlacement } from './Popover.js'
 export { FormBuilder, useForm } from './components/FormBuilder.js';
 export type { FormBuilderProps } from './components/FormBuilder.js';
 
+export { SearchInput } from './SearchInput.js';
+export type { SearchInputOptions } from './SearchInput.js';
+
 // -- External Theme / Stylesheet Engine --
 export * from '@termuijs/tss';

@@ -57,6 +57,8 @@ export { Knob } from "./input/Knob.js";
 export type { KnobOptions } from "./input/Knob.js";
 export { PinInput } from "./input/PinInput.js";
 export type { PinInputOptions } from "./input/PinInput.js";
+export { ContextMenu } from './input/ContextMenu.js';
+export type { ContextMenuItem } from './input/ContextMenu.js';
 
 // ── Data Widgets ──────────────────────────────────────
 export { Table } from './data/Table.js';
@@ -106,6 +108,10 @@ export { Divider } from './layout/Divider.js';
 export type { DividerOptions, DividerOrientation } from './layout/Divider.js';
 export { AspectRatio } from './layout/AspectRatio.js';
 export type { AspectRatioOptions } from './layout/AspectRatio.js';
+export { Fill } from './layout/Fill.js';
+export type { FillOptions } from './layout/Fill.js';
+export { SplitPane } from './layout/SplitPane.js';
+export type { SplitPaneOptions } from './layout/SplitPane.js';
 
 // ── Feedback Widgets ──────────────────────────────────
 export { ProgressBar } from './feedback/ProgressBar.js';
@@ -263,3 +269,17 @@ export type {
     ProgressTask,
 } from './feedback/Progress.js';
 export * from './display/Highlight.js';
+
+// ── Additional Display Widgets ────────────────────────
+export { ThinkingBlock } from './display/ThinkingBlock.js';
+export type { ThinkingBlockOptions } from './display/ThinkingBlock.js';
+export { Collapsible } from './display/Collapsible.js';
+export type { CollapsibleOptions } from './display/Collapsible.js';
+export { Digits } from './display/Digits.js';
+export type { DigitsOptions } from './display/Digits.js';
+export { DirectoryTree } from './display/DirectoryTree.js';
+export type { DirectoryTreeOptions } from './display/DirectoryTree.js';
+export { UnorderedList } from './display/UnorderedList.js';
+export type { UnorderedListOptions } from './display/UnorderedList.js';
+export { Rule } from './display/Rule.js';
+export type { RuleOrientation, RuleOptions } from './display/Rule.js';
