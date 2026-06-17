@@ -176,6 +176,8 @@ export type { TextAreaOptions } from './TextArea.js';
 export { Stepper } from './Stepper.js';
 export type { StepperOptions } from './Stepper.js';
 
+export { Announcer, announcer } from './Announcer.js';
+export type { AnnouncerOptions, Politeness } from './Announcer.js';
 export { ShortcutHelpOverlay } from './components/ShortcutHelpOverlay.js';
 export type { Shortcut, ShortcutHelpOverlayProps } from './components/ShortcutHelpOverlay.js';
 
