@@ -39,24 +39,18 @@ export class LinearPrompt extends Widget {
     }
 
     selectNext(): void {
-        if (this._options.length === 0) return;
-        let n = this._selectedIndex;
-        do {
-            n = (n + 1) % this._options.length;
-        } while (n !== this._selectedIndex && this._options[n].disabled);
-        if (this._selectedIndex !== n && !this._options[n].disabled) {
+        let n = this._selectedIndex + 1;
+        while (n < this._options.length && this._options[n]?.disabled) n++;
+        if (n < this._options.length) {
             this._selectedIndex = n;
             this.markDirty();
         }
     }
 
     selectPrev(): void {
-        if (this._options.length === 0) return;
-        let n = this._selectedIndex;
-        do {
-            n = (n - 1 + this._options.length) % this._options.length;
-        } while (n !== this._selectedIndex && this._options[n].disabled);
-        if (this._selectedIndex !== n && !this._options[n].disabled) {
+        let n = this._selectedIndex - 1;
+        while (n >= 0 && this._options[n]?.disabled) n--;
+        if (n >= 0) {
             this._selectedIndex = n;
             this.markDirty();
         }
