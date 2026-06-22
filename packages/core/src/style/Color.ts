@@ -151,16 +151,51 @@ function ansi256ToRgb(code: number): [number, number, number] {
  * Find the nearest ANSI 256 color code for a given RGB.
  */
 function rgbToAnsi256(r: number, g: number, b: number): number {
-    // Check if it's a grayscale
-    if (r === g && g === b) {
-        if (r < 8) return 16;
-        if (r > 248) return 231;
-        return Math.round((r - 8) / 247 * 24) + 232;
+  // 1. Generate the complete ANSI 256-color look-up pool
+  const pool: { id: number; r: number; g: number; b: number }[] = [];
+  
+  // Standard 16 colors
+  const standardColors = [
+    [0, 0, 0], [128, 0, 0], [0, 128, 0], [128, 128, 0], [0, 0, 128], [128, 0, 128], [0, 128, 128], [192, 192, 192],
+    [128, 128, 128], [255, 0, 0], [0, 255, 0], [255, 255, 0], [0, 0, 255], [255, 0, 255], [0, 255, 255], [255, 255, 255]
+  ];
+  standardColors.forEach((rgb, id) => pool.push({ id, r: rgb[0], g: rgb[1], b: rgb[2] }));
+
+  // Extended 216-color cube (16-231)
+  const steps = [0, 95, 135, 175, 215, 255];
+  let id = 16;
+  for (let pr = 0; pr < 6; pr++) {
+    for (let pg = 0; pg < 6; pg++) {
+      for (let pb = 0; pb < 6; pb++) {
+        pool.push({ id, r: steps[pr], g: steps[pg], b: steps[pb] });
+        id++;
+      }
     }
-    return 16
-        + 36 * Math.round(r / 255 * 5)
-        + 6 * Math.round(g / 255 * 5)
-        + Math.round(b / 255 * 5);
+  }
+
+  // Grayscale ramp (232-255)
+  for (let i = 0; i < 24; i++) {
+    const gray = 8 + i * 10;
+    pool.push({ id: 232 + i, r: gray, g: gray, b: gray });
+  }
+
+  // 2. Find the mathematically closest color using human perception weights
+  let minDistance = Infinity;
+  let closestAnsiId = 15;
+
+  for (const target of pool) {
+    const distance = 
+      2 * Math.pow(r - target.r, 2) +
+      4 * Math.pow(g - target.g, 2) +
+      3 * Math.pow(b - target.b, 2);
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestAnsiId = target.id;
+    }
+  }
+
+  return closestAnsiId;
 }
 
 /**
