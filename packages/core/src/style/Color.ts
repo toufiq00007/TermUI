@@ -150,10 +150,10 @@ function ansi256ToRgb(code: number): [number, number, number] {
 /**
  * Find the nearest ANSI 256 color code for a given RGB.
  */
-function rgbToAnsi256(r: number, g: number, b: number): number {
-  // 1. Generate the complete ANSI 256-color look-up pool
+ // 1. Generate the complete ANSI 256-color look-up pool once outside the function
+const ANSI_256_POOL: { id: number; r: number; g: number; b: number }[] = (() => {
   const pool: { id: number; r: number; g: number; b: number }[] = [];
-  
+
   // Standard 16 colors
   const standardColors = [
     [0, 0, 0], [128, 0, 0], [0, 128, 0], [128, 128, 0], [0, 0, 128], [128, 0, 128], [0, 128, 128], [192, 192, 192],
@@ -179,15 +179,27 @@ function rgbToAnsi256(r: number, g: number, b: number): number {
     pool.push({ id: 232 + i, r: gray, g: gray, b: gray });
   }
 
+  return pool;
+})();
+
+const colorCache = new Map<string, number>();
+
+export function rgbToAnsi256(r: number, g: number, b: number): number {
+  const cacheKey = `${r},${g},${b}`;
+  if (colorCache.has(cacheKey)) {
+    return colorCache.get(cacheKey)!;
+  }
+
   // 2. Find the mathematically closest color using human perception weights
   let minDistance = Infinity;
   let closestAnsiId = 15;
 
-  for (const target of pool) {
-    const distance = 
-      2 * Math.pow(r - target.r, 2) +
-      4 * Math.pow(g - target.g, 2) +
-      3 * Math.pow(b - target.b, 2);
+  // CHANGE: Change 'pool' to 'ANSI_256_POOL'
+  for (const target of ANSI_256_POOL) {
+    const distance =
+      2 * (r - target.r) * (r - target.r) +
+      4 * (g - target.g) * (g - target.g) +
+      3 * (b - target.b) * (b - target.b);
 
     if (distance < minDistance) {
       minDistance = distance;
@@ -195,9 +207,10 @@ function rgbToAnsi256(r: number, g: number, b: number): number {
     }
   }
 
+  // Add the cache assignment right before returning
+  colorCache.set(cacheKey, closestAnsiId);
   return closestAnsiId;
 }
-
 /**
  * Find the nearest ANSI 4-bit basic color for a given RGB.
  */
