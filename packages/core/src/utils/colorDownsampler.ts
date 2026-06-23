@@ -2,10 +2,17 @@ const colorCache = new Map<string, number>();
 
 function hexToRgb(hex: string): [number, number, number] {
   const sanitized = hex.replace('#', '');
+  
+  // Validate that it's a valid 6-character hex string
+  if (!/^[0-9A-Fa-f]{6}$/.test(sanitized)) {
+    throw new Error(`Invalid hex color format: ${hex}`);
+  }
+
   const bigint = parseInt(sanitized, 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
+  
   return [r, g, b];
 }
 
