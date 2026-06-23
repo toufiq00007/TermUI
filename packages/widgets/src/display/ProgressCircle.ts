@@ -9,6 +9,7 @@ import {
     type Color,
     styleToCellAttrs,
     caps,
+    stringWidth,
     mergeStyles,
     defaultStyle,
 } from '@termuijs/core';
@@ -74,7 +75,7 @@ export class ProgressCircle extends Widget {
 
         screen.writeString(x, y, arc, { ...attrs, fg: this._color });
 
-        let cx = x + arc.length + 1;
+        let cx = x + stringWidth(arc) + 1;
         if (this._showPercent) {
             const pct = `${Math.round(this._value)}%`;
             screen.writeString(cx, y, pct, attrs);
