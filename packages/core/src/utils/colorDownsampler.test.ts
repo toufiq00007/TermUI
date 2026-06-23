@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { downsampleToAnsi256 } from "./colorDownsampler";
 
 describe("ANSI Color Space Downsampler", () => {
@@ -9,6 +9,6 @@ describe("ANSI Color Space Downsampler", () => {
 
   test("should map bright pure green to an appropriate ANSI index", () => {
     const ansiGreen = downsampleToAnsi256("#00FF00");
-    expect(ansiGreen).toBeDefined();
+    expect(ansiGreen).toBe(10);
   });
 });
