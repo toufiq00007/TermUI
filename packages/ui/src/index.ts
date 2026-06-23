@@ -25,6 +25,7 @@ export {
 
 // ── New components ──
 export { Slider, RangeInput } from './Slider.js';
+export type { SliderOptions, RangeInputOptions } from './Slider.js';
 export { Divider } from './Divider.js';
 export type { DividerOptions } from './Divider.js';
 
@@ -40,8 +41,8 @@ export type { MenuBarOptions, MenuBarItem, MenuItem as MenuBarItemType } from '.
 export { Menu } from './Menu.js';
 export type { MenuItem, MenuOptions } from './Menu.js';
 
-export { Carousel } from './Carousel.js';
-export type { CarouselOptions } from './Carousel.js';
+export { Carousel } from '@termuijs/widgets';
+export type { CarouselOptions } from '@termuijs/widgets';
 
 export { Modal } from './Modal.js';
 export type { ModalOptions } from './Modal.js';
@@ -150,8 +151,8 @@ export type { SearchableSelectOption, SearchableSelectOptions } from './Searchab
 export { Autocomplete, type AutocompleteOptions } from './Autocomplete.js';
 export { Switch } from './Switch.js';
 export type { SwitchOptions } from './Switch.js';
-export { Checkbox } from './Checkbox.js';
-export type { CheckboxOptions } from './Checkbox.js';
+export { Checkbox } from '@termuijs/widgets';
+export type { CheckboxOptions } from '@termuijs/widgets';
 
 export { CheckboxGroup } from './CheckboxGroup.js';
 export type {
