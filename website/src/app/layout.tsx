@@ -26,14 +26,12 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     url: SITE_URL,
-    images: [],
   },
   twitter: {
     card: 'summary_large_image',
     site: '@termuijs',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: [],
   },
 }
 
